@@ -20,6 +20,7 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.Picker;
+import java.util.ArrayList;
 
 /**
  *
@@ -32,7 +33,9 @@ public class PivDisplayCalendar extends Container {
      private ComboBox year;
      private static final String[] DAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
      private static final String[] LABELS = {"Su", "M", "Tu", "W", "Th", "F", "Sa"};
-     Button newButton = new Button("");
+     
+     private ArrayList<Button> allButtons = new ArrayList<Button>();
+     //Button newButton = new Button("");
      
     public PivDisplayCalendar(){
         
@@ -53,7 +56,7 @@ public class PivDisplayCalendar extends Container {
             calendarTitle.add(BorderLayout.CENTER, monthYear);
             calendarTitle.add(BorderLayout.EAST, nextMonth);
             calendarTitleCopy.add(calendarTitle);
-            
+            Button dayButton= new Button();
             
             
             
@@ -66,16 +69,34 @@ public class PivDisplayCalendar extends Container {
                 title.addComponent(createDayTitle(iter));
             }
             for (int iter = 0; iter < length; iter++) {
+               dayButton = new Button(""+iter);
+               
+                    dayButton.addActionListener(new ActionListener() {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent evt) {
+                            Log.p("Action event triggered");
+                            
+                            Button b1 = (Button)(evt.getActualComponent());
+                            Log.p( b1.getText() );
+                        }
+                    });
+               
+               allButtons.add(dayButton);
+                
+                /*
                 Picker datePicker = new Picker();
-            //datePicker.setType(Display.PICKER_TYPE_DATE);
-            datePicker.setText(""+iter);
+                datePicker.setText(""+iter);
+                */
+                //datePicker.setType(Display.PICKER_TYPE_DATE);
                // buttons[iter] = new Button(""+iter);
-                days.addComponent(datePicker);
+                days.addComponent(dayButton);
                 if (iter <= 7) {
-                    newButton.setNextFocusUp(year);
+                    dayButton.setNextFocusUp(year);
                 }
                 
             }   
+            
            
                 
     }
