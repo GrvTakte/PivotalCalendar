@@ -3,16 +3,15 @@ package com.pivotal.event.calendar;
 
 import com.codename1.db.Cursor;
 import com.codename1.db.Database;
+import com.codename1.db.Row;
 import com.codename1.io.FileSystemStorage;
 import com.codename1.io.Log;
-import com.codename1.io.Storage;
 import com.codename1.io.Util;
-import com.codename1.ui.Calendar;
 import com.codename1.ui.Display;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,12 +19,30 @@ import java.util.Date;
  */
 public class PivCalendarDatabase {
     
+    PivCalendarModel ModelObject = new PivCalendarModel();
     Cursor cur;
     Database myDataBase;
+    ArrayList<String[]> data = new ArrayList<String[]>();
+    int columns;
+    
     
     public PivCalendarDatabase(){
-        
-     /*   String path = Display.getInstance().getDatabasePath("Events.db");
+      
+    }
+    
+    public void insertEvent(String eventDate, String eventName, String eventDescription){
+        try{
+       String[] DatabaseArgument = new String[]{eventDate,eventName,eventDescription};
+        myDataBase.execute("INSERT INTO CalendarData('Date','EventName','EventDescription') VALUES(?,?,?)",  DatabaseArgument );
+        Log.p("Table successfully created");
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    public void createDataBase(){
+          
+      String path = Display.getInstance().getDatabasePath("Events.db");
         FileSystemStorage fs = FileSystemStorage.getInstance();
           if(!fs.exists(path)) {
                     try (InputStream is = Display.getInstance().getResourceAsStream(getClass(), "/Events.db");
@@ -44,21 +61,82 @@ public class PivCalendarDatabase {
                             catch(IOException e){
                                         e.printStackTrace();
                                     }
-        */
+                    Log.p("Database successfully created");
+                    ModelObject.setEventName("Hello from calendar");
     }
     
-    public void InsertEvent(String eventDate, String eventName, String eventDescription){
+    public void checkEvent(){
         try{
-       String[] DatabaseArgument = new String[]{eventDate,eventName,eventDescription};
-        myDataBase.execute("INSERT INTO CalendarData('Date','EventName','EventDescription') VALUES(?,?,?)",  DatabaseArgument );
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+            cur = myDataBase.executeQuery("SELECT Date FROM CalendarData");
+            columns = cur.getColumnCount();
+            if(columns > 0){
+                boolean next = cur.next();
+                if(next){
+                    String[] columnNames = new String[columns];
+                    for(int iter = 0; iter<columns ; iter++ ){
+                        columnNames[iter] = cur.getColumnName(iter);
+                     }
+       while(next) {
+          Row currentRow = cur.getRow();
+          String[] currentRowArray = new String[columns];
+          for(int iter = 0 ; iter < columns ; iter++) {
+          currentRowArray[iter] = currentRow.getString(iter);
+          }
+          data.add(currentRowArray);
+          next = cur.next();
+          }
+          Object[][] arr = new Object[data.size()][];
+          data.toArray(arr);
+          }
+          }
+          }catch(IOException e){
+          e.printStackTrace();
+          }
+          for(int i = 0 ; i< data.size(); i++){
+          Log.p(data.get(i)[0]);
+          }
+          
+          Log.p("CheckEvent() invoke");
     }
     
     
-    public void DisplayEvent(){
-        
+    public void displayEvent(){
+        try{
+        cur =  myDataBase.executeQuery("SELECT * FROM CalendarData");
+          columns = cur.getColumnCount();
+          if(columns > 0) {
+          boolean next = cur.next();
+          if(next) {               
+              
+          String[] columnNames = new String[columns];
+          for(int iter = 0 ; iter < columns ; iter++) {
+          columnNames[iter] = cur.getColumnName(iter);
+          }
+          while(next) {
+          Row currentRow = cur.getRow();
+          String[] currentRowArray = new String[columns];
+          for(int iter = 0 ; iter < columns ; iter++) {
+          currentRowArray[iter] = currentRow.getString(iter);
+          }
+          data.add(currentRowArray);
+          next = cur.next();
+          }
+          Object[][] arr = new Object[data.size()][];
+          data.toArray(arr);
+          }
+          }
+          }catch(IOException e){
+          e.printStackTrace();
+          }
+          for(int i = 0 ; i< data.size(); i++){
+              for(int j =0; j< columns ; j++){
+          Log.p(data.get(i)[j]);
+              }
+          }
+          
+          Log.p("DisplayEvent() invoke");
+          String demo = ModelObject.getEventName();
+          Log.p(demo);
     }
     
     

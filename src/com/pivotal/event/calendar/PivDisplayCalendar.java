@@ -5,7 +5,6 @@ import com.codename1.io.Storage;
 import com.codename1.ui.Button;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Container;
-import com.codename1.ui.Dialog;
 import com.codename1.ui.Display;
 import com.codename1.ui.Label;
 import com.codename1.ui.events.ActionEvent;
@@ -16,8 +15,6 @@ import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.Picker;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -129,11 +126,24 @@ public class PivDisplayCalendar extends Container {
                     i=0;
                     j++;
                 }
-               
-                
             }
         });
-           
+   
+            prevMonth.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+            month.setText(MONTHS[i]);
+            yearLabel.setText(""+YEARS[j]);
+            if((i<MONTHS.length+1)){
+                i--;
+            }
+            else{
+                i=0;
+                j--;
+            }
+        }
+   });
+            
     }
        
      protected Label createDayTitle(int day) {

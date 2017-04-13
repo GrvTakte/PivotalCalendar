@@ -32,11 +32,10 @@ public class PivEventCalendar {
     public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
 
-        // Enable Toolbar on all Forms by default
+        
         Toolbar.setGlobalToolbar(true);
-
-        // Pro only feature, uncomment if you have a pro subscription
-        // Log.bindCrashProtection(true);
+        DatabaseObj.createDataBase();
+        Log.p("Database process initiated");
     }
     
     public void start() {
@@ -88,14 +87,16 @@ public class PivEventCalendar {
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-           // DatabaseObj.InsertEvent(DateLabel.getText(), EventText.getText(), DescriptionText.getText());
+            DatabaseObj.insertEvent(DateLabel.getText(), EventText.getText(), DescriptionText.getText());
+            DatabaseObj.displayEvent();
             }
         });
         
         clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-            //Log.p(ModelObj.getEventDate().toString());
+            String demo1 = DatabaseObj.ModelObject.getEventName();
+            Log.p(demo1);
             }
         });
         
