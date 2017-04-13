@@ -1,15 +1,21 @@
 package com.pivotal.event.calendar;
 
+import com.codename1.io.Log;
+import com.codename1.ui.Button;
 import com.codename1.ui.Container;
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
 import com.codename1.ui.Dialog;
+import com.codename1.ui.FontImage;
 import com.codename1.ui.Label;
 import com.codename1.ui.TextField;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import com.codename1.ui.Toolbar;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.table.TableLayout;
 
 /**
@@ -17,9 +23,11 @@ import com.codename1.ui.table.TableLayout;
  * of building native mobile applications using Java.
  */
 public class PivEventCalendar {
-
     private Form current;
     private Resources theme;
+    PivCalendarDatabase DatabaseObj = new PivCalendarDatabase();
+    PivCalendarModel ModelObj = new PivCalendarModel();
+    Label DateLabel;
 
     public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
@@ -36,7 +44,7 @@ public class PivEventCalendar {
             current.show();
             return;
         }
-        Form pivCalendar = new Form(new BoxLayout(BoxLayout.Y_AXIS));
+        Form pivCalendar = new Form("EventApp",new BoxLayout(BoxLayout.Y_AXIS));
         PivDisplayCalendar PDCObject = new PivDisplayCalendar();
         pivCalendar.add(PDCObject);
         
@@ -49,7 +57,7 @@ public class PivEventCalendar {
         Label Description = new Label("Description: ");
         Description.setUIID("TableStyle");
         
-        Label DateLabel = new Label("","");
+        DateLabel = new Label("24/02/2017");
         DateLabel.setUIID("TableStyle");
         TextField EventText = new TextField("", "Enter Event Name..");
         EventText.setUIID("TableStyle");
@@ -58,8 +66,39 @@ public class PivEventCalendar {
         
         Container container1 = TableLayout.encloseIn(2,Date,DateLabel,Event,EventText,Description,DescriptionText);
         
+         Toolbar tb = new Toolbar();
+         pivCalendar.setToolBar(tb);
+        
+         tb.setTitle("EventApp");
+         tb.addCommandToOverflowMenu("Event Database", FontImage.createMaterial(FontImage.MATERIAL_DATA_USAGE, UIManager.getInstance().getComponentStyle("Title")), (evt) -> {
+         });
+         tb.addCommandToOverflowMenu("Event Map", FontImage.createMaterial(FontImage.MATERIAL_MAP, UIManager.getInstance().getComponentStyle("Title")), (evt) -> {
+         });
+        
+         Button add= new Button("Add");
+         add.setUIID("AddClear");
+         Button clear = new Button("Clear");
+         clear.setUIID("AddClear1");
+         
         pivCalendar.add(container1);
+        pivCalendar.add(add);
+        pivCalendar.add(clear);
         pivCalendar.show();
+        
+        add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+           // DatabaseObj.InsertEvent(DateLabel.getText(), EventText.getText(), DescriptionText.getText());
+            }
+        });
+        
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+            //Log.p(ModelObj.getEventDate().toString());
+            }
+        });
+        
     }
     
     

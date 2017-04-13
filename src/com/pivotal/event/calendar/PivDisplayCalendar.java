@@ -1,9 +1,11 @@
 package com.pivotal.event.calendar;
 
 import com.codename1.io.Log;
+import com.codename1.io.Storage;
 import com.codename1.ui.Button;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Container;
+import com.codename1.ui.Dialog;
 import com.codename1.ui.Display;
 import com.codename1.ui.Label;
 import com.codename1.ui.events.ActionEvent;
@@ -14,15 +16,18 @@ import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.Picker;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
  * @author gaurav
  */
 public class PivDisplayCalendar extends Container {
-    
-    
+    PivEventCalendar EventObject = new PivEventCalendar();
+    PivCalendarModel ModelObject = new PivCalendarModel();
     int length =31;
      private ComboBox year;
      private static final String[] DAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -30,6 +35,8 @@ public class PivDisplayCalendar extends Container {
      private static final String[] MONTHS = {"January","February","March","April","May","June","July","August","September","October","November","December"};
      private static final int[] YEARS = {2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027};
      public int i = 1, j=0;
+     public Date value = new Date();
+     public Object metaData;
      
      private ArrayList<Button> allButtons = new ArrayList<Button>();
      //Button newButton = new Button("");
@@ -76,7 +83,26 @@ public class PivDisplayCalendar extends Container {
                         public void actionPerformed(ActionEvent evt) {
                             Log.p("Action event triggered");
                             Picker datePicker = new Picker();
-                            datePicker.setType(Display.PICKER_TYPE_DATE);
+                           
+                            try{
+                                Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);
+                                
+                    /*        SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy");
+                                String selectedDate = new Date(value.toString()).toString();
+                                Date date1 = sdf.parse(selectedDate);
+                                SimpleDateFormat df  = new SimpleDateFormat("dd/MM/YYYY");
+                                String dateValue = df.format(date1); */
+                                
+                                
+                            
+                            //Dialog.show("Date",value.toString(),"OK","");
+                                Storage.getInstance().writeObject("Date", value);
+                            ModelObject.setEventDate(value);
+                            
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+                            
                             
                             //Button b1 = (Button)(evt.getActualComponent());
                             //Log.p( b1.getText() );
