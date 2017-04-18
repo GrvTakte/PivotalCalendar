@@ -1,11 +1,14 @@
 package com.pivotal.event.calendar;
 
+import com.codename1.db.Cursor;
+import com.codename1.db.Database;
 import com.codename1.io.Log;
 import com.codename1.io.Storage;
 import com.codename1.ui.Button;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Container;
 import com.codename1.ui.Display;
+import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
@@ -22,10 +25,15 @@ import java.util.Date;
  *
  * @author gaurav
  */
-public class PivDisplayCalendar extends Container {
+public class PivDisplayCalendar extends Form {
+    Cursor cur;
+    Database myDataBase;
     PivEventCalendar EventObject = new PivEventCalendar();
     PivCalendarModel ModelObject = new PivCalendarModel();
-    int length =31;
+    PivCalendarDatabase DatabaseObject = new PivCalendarDatabase();
+    int length2 =1;
+    int length = 31;
+    int[] monthStart = {0,3,3,6,1,4,6,2,5,0,3,5};
      private ComboBox year;
      private static final String[] DAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
      private static final String[] LABELS = {"Su", "M", "Tu", "W", "Th", "F", "Sa"};
@@ -34,23 +42,26 @@ public class PivDisplayCalendar extends Container {
      public int i = 1, j=0;
      public Date value = new Date();
      public Object metaData;
-     
+     Button dayButton= new Button();
      private ArrayList<Button> allButtons = new ArrayList<Button>();
-     //Button newButton = new Button("");
-     
+     Object[][] DateObject;
+     int columns;
+
+   
     public PivDisplayCalendar(){
-        
-        super(new BoxLayout(BoxLayout.Y_AXIS));
+        super(new BoxLayout(BoxLayout.Y_AXIS));      
+            
+            Log.p("Calendar invoked");
             Container calendarTitle = new Container(new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER));
             Container title = new Container(new GridLayout(1,7));
             Container days = new Container(new GridLayout(6, 7));
             Container calendarTitleCopy = new Container(new GridLayout(1, 1));
-                calendarTitleCopy.setUIID("CalendarTitleCopy");
+            calendarTitleCopy.setUIID("CalendarTitleCopy");
             this.addComponent(calendarTitleCopy);
             this.addComponent(title);
             this.addComponent(days);
-    
-                               
+            
+            
             Button prevMonth = new Button("<");
             Button nextMonth = new Button(">");
             Label month = new Label(MONTHS[0]);
@@ -60,8 +71,6 @@ public class PivDisplayCalendar extends Container {
             calendarTitle.add(BorderLayout.CENTER, TitleLabel);
             calendarTitle.add(BorderLayout.EAST, nextMonth);
             calendarTitleCopy.add(calendarTitle);
-            Button dayButton= new Button();
-            
             
             
             
@@ -72,9 +81,15 @@ public class PivDisplayCalendar extends Container {
             for (int iter = 0; iter < DAYS.length; iter++) {
                 title.addComponent(createDayTitle(iter));
             }
-            for (int iter = 1; iter < length; iter++) {
-               dayButton = new Button(""+iter);
-               
+            for (int iter = 0; iter < length; iter++) {
+                if(iter<monthStart[j]){
+                    dayButton=new Button("");
+                }else{
+                        dayButton = new Button(""+ length2);
+                        length2++;
+                }
+              /* Log.p("Getting data from Model class");
+               Log.p(""+DatabaseObject.ModelObject.getEventData()); */
                     dayButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
@@ -83,24 +98,11 @@ public class PivDisplayCalendar extends Container {
                            
                             try{
                                 Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);
-                                
-                    /*        SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy");
-                                String selectedDate = new Date(value.toString()).toString();
-                                Date date1 = sdf.parse(selectedDate);
-                                SimpleDateFormat df  = new SimpleDateFormat("dd/MM/YYYY");
-                                String dateValue = df.format(date1); */
-                                
-                                
-                            
-                            //Dialog.show("Date",value.toString(),"OK","");
                                 Storage.getInstance().writeObject("Date", value);
-                            ModelObject.setEventDate(value);
-                            
+                                Log.p(value.toString());
                             }catch(Exception e){
                                 e.printStackTrace();
                             }
-                            
-                            
                             //Button b1 = (Button)(evt.getActualComponent());
                             //Log.p( b1.getText() );
                         }
@@ -116,11 +118,59 @@ public class PivDisplayCalendar extends Container {
             nextMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                
+                int length3 = 1;
                 month.setText(MONTHS[i]);
                 yearLabel.setText(""+YEARS[j]);
                 if((i<MONTHS.length-1)){
                     i++;
+                    int k = 0;
+                   
+                    if(k<monthStart.length-1){
+                        
+                        k++;
+                        
+                        for (int iter = 0; iter < length; iter++) {
+                if(iter<monthStart[k]){
+                    Log.p("After block invoked");
+                    if(contains(days)){
+                        days.removeAll();
+                    dayButton=new Button("");
+                    days.revalidate();
+                    }
+                }else{
+                        dayButton = new Button(""+ length3);
+                        length3++;
+                        days.revalidate();
+                }
+              /* Log.p("Getting data from Model class");
+               Log.p(""+DatabaseObject.ModelObject.getEventData()); */
+                    dayButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent evt) {
+                            Log.p("Action event triggered");
+                            Picker datePicker = new Picker();
+                           
+                            try{
+                                Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);
+                                Storage.getInstance().writeObject("Date", value);
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+                            //Button b1 = (Button)(evt.getActualComponent());
+                            //Log.p( b1.getText() );
+                        }
+                    });
+               
+               allButtons.add(dayButton);
+                days.addComponent(dayButton);
+                if (iter <= 7) {
+                    dayButton.setNextFocusUp(year);
+                }
+            }  
+                      
+                    }
+                   
+                   
                 }
                 else{
                     i=0;
@@ -152,8 +202,7 @@ public class PivDisplayCalendar extends Container {
         dayh.setEndsWith3Points(false);
         dayh.setTickerEnabled(false);
         return dayh;
-    }
-     
+    }    
      
     
 }
