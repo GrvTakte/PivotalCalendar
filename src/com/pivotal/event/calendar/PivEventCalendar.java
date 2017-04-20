@@ -31,15 +31,15 @@ public class PivEventCalendar {
         private Resources theme;
         public PivCalendarDatabase DatabaseObj = new PivCalendarDatabase();
         public PivCalendarModel ModelObj = new PivCalendarModel();
-        public Label DateLabel;
-        public TextField EventText, DescriptionText;
+        public TextField EventText, DescriptionText, DateLabel;
         public Form pivCalendar;
 
         public void init(Object context) {
                 theme = UIManager.initFirstTheme("/theme");  
                 Toolbar.setGlobalToolbar(true);
                 DatabaseObj.createDataBase();
-                Log.p("Database and Table  process initiated");
+               DatabaseObj.findEventDate();
+               Log.p("Database and Table  process initiated");
                
         }
     
@@ -64,7 +64,7 @@ public class PivEventCalendar {
             Label Description = new Label("Description: ");
             Description.setUIID("TableStyle");
         
-            DateLabel = new Label("24/02/2017");
+            DateLabel = new TextField();
             DateLabel.setUIID("TableStyle");
             EventText = new TextField("", "Enter Event Name..");
             EventText.setUIID("TableStyle");
@@ -75,7 +75,7 @@ public class PivEventCalendar {
         
             Toolbar tb = new Toolbar();
             pivCalendar.setToolBar(tb);
-        
+            
             tb.setTitle("EventApp");
             tb.addCommandToOverflowMenu("Event Database", FontImage.createMaterial(FontImage.MATERIAL_DATA_USAGE, UIManager.getInstance().getComponentStyle("Title")), (evt) -> {
             DatabaseObj.displayEvent();
@@ -98,9 +98,8 @@ public class PivEventCalendar {
                     public void actionPerformed(ActionEvent evt) {
                             DatabaseObj.insertEvent(DateLabel.getText(), EventText.getText(), DescriptionText.getText());
                             DatabaseObj.displayEvent();
-            
                             if((DateLabel.getText()=="")||(EventText.getText()=="")||(DescriptionText.getText()=="")) {
-                                            if((DateLabel.getText()==null)||(EventText.getText()=="")||(DescriptionText.getText()==null)){
+                                            if((DateLabel.getText()==null)||(EventText.getText()==null)||(DescriptionText.getText()==null)){
                                                                 Dialog.show("Required field", "Please fill all the required fields", "OK", "");
                                             }
                             }

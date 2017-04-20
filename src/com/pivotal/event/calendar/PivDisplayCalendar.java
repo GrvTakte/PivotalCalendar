@@ -7,6 +7,7 @@ import com.codename1.io.Storage;
 import com.codename1.ui.Button;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Container;
+import com.codename1.ui.Dialog;
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
 import com.codename1.ui.Label;
@@ -29,8 +30,8 @@ public class PivDisplayCalendar extends Form {
     Cursor cur;
     Database myDataBase;
     PivEventCalendar EventObject = new PivEventCalendar();
-    PivCalendarModel ModelObject = new PivCalendarModel();
-    PivCalendarDatabase DatabaseObject = new PivCalendarDatabase();
+    
+    
     int length2 =1;
     int length = 31;
     int[] monthStart = {0,3,3,6,1,4,6,2,5,0,3,5};
@@ -39,18 +40,22 @@ public class PivDisplayCalendar extends Form {
      private static final String[] LABELS = {"Su", "M", "Tu", "W", "Th", "F", "Sa"};
      private static final String[] MONTHS = {"January","February","March","April","May","June","July","August","September","October","November","December"};
      private static final int[] YEARS = {2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027};
-     public int i = 1, j=0;
+     public int i = 1, j=0, k=0;
      public Date value = new Date();
      public Object metaData;
      Button dayButton= new Button();
      private ArrayList<Button> allButtons = new ArrayList<Button>();
      Object[][] DateObject;
      int columns;
+     Storage dateNumber = Storage.getInstance();
+     public Storage s4 = Storage.getInstance();
+     public String parseNumber=dateNumber.readObject("number").toString();
+                    
+     public int number=Integer.parseInt(parseNumber);
 
    
     public PivDisplayCalendar(){
         super(new BoxLayout(BoxLayout.Y_AXIS));      
-            
             Log.p("Calendar invoked");
             Container calendarTitle = new Container(new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER));
             Container title = new Container(new GridLayout(1,7));
@@ -74,6 +79,7 @@ public class PivDisplayCalendar extends Form {
             
             
             
+            
            if(UIManager.getInstance().isThemeConstant("calTitleDayStyleBool", false)) {
                 title.setUIID("CalendarTitleArea");
                 days.setUIID("CalendarDayArea");
@@ -82,12 +88,32 @@ public class PivDisplayCalendar extends Form {
                 title.addComponent(createDayTitle(iter));
             }
             for (int iter = 0; iter < length; iter++) {
+                
                 if(iter<monthStart[j]){
                     dayButton=new Button("");
-                }else{
+                }
+                else{
+                    if(dateNumber.readObject("number").toString()!=null){
+                             
+                    if(length2!=Integer.parseInt(s4.readObject("Date"+number).toString())){
                         dayButton = new Button(""+ length2);
                         length2++;
+                    }else{
+                        dayButton = new Button("*"+length2);
+                        length2++;
+                       number--;
+                       if((number<0))
+                       {
+                           number++;
+                          
+                      }
+                    }
+                    }else{
+                            dayButton = new Button(""+length2);
+                            length2++;
+                    }
                 }
+                
               /* Log.p("Getting data from Model class");
                Log.p(""+DatabaseObject.ModelObject.getEventData()); */
                     dayButton.addActionListener(new ActionListener() {
@@ -100,6 +126,7 @@ public class PivDisplayCalendar extends Form {
                                 Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);
                                 Storage.getInstance().writeObject("Date", value);
                                 Log.p(value.toString());
+                                Dialog.show("Selected Date", value.toString(), "OK", "");
                             }catch(Exception e){
                                 e.printStackTrace();
                             }
@@ -115,6 +142,7 @@ public class PivDisplayCalendar extends Form {
                 }
             }    
             
+           
             nextMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -123,7 +151,7 @@ public class PivDisplayCalendar extends Form {
                 yearLabel.setText(""+YEARS[j]);
                 if((i<MONTHS.length-1)){
                     i++;
-                    int k = 0;
+                    
                    
                     if(k<monthStart.length-1){
                         

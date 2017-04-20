@@ -6,6 +6,7 @@ import com.codename1.db.Database;
 import com.codename1.db.Row;
 import com.codename1.io.FileSystemStorage;
 import com.codename1.io.Log;
+import com.codename1.io.Storage;
 import com.codename1.io.Util;
 import com.codename1.ui.Command;
 import com.codename1.ui.Display;
@@ -35,8 +36,7 @@ public class PivCalendarDatabase {
     Database myDataBase;
     ArrayList<String[]> data,data1,datafur;
     int columns;
-    Date[] EventDateArray;
-    Object[][] arr;
+    Object[][] arr,arr1;
     
     
     
@@ -71,6 +71,7 @@ public class PivCalendarDatabase {
           } 
                     try{
                                 myDataBase = Display.getInstance().openOrCreate("Events.db");
+                                
                                 myDataBase.execute("CREATE TABLE IF NOT EXISTS CalendarData (Date date NOT NULL,EventName varchar(255) NOT NULL, EventDescription varchar(255) NOT NULL)");
                     }
                             catch(IOException e){
@@ -87,25 +88,26 @@ public class PivCalendarDatabase {
             Command back1 = new Command("Back"){
          public void actionPerformed(ActionEvent ev){
              PivEventCalendar EventObject = new PivEventCalendar();
-         EventObject.start();
+             EventObject.start();
+         
          }
          };
             DataEvent.setToolBar(Tbar);
             Tbar.addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK,UIManager.getInstance().getComponentStyle("Title")), back1);
-          cur = myDataBase.executeQuery("SELECT * FROM CalendarData");
-          int columns = cur.getColumnCount();
-          if(columns > 0) {
+          cur = myDataBase.executeQuery("SELECT * FROM CalendarData order by Date desc");
+          int columns2 = cur.getColumnCount();
+          if(columns2 > 0) {
           boolean next = cur.next();
           if(next) {
           ArrayList<String[]> dataArray = new ArrayList<>();
-          String[] columnNames = new String[columns];
-          for(int iter = 0 ; iter < columns ; iter++) {
+          String[] columnNames = new String[columns2];
+          for(int iter = 0 ; iter < columns2 ; iter++) {
           columnNames[iter] = cur.getColumnName(iter);
           }
           while(next) {
           Row currentRow = cur.getRow();
-          String[] currentRowArray = new String[columns];
-          for(int iter = 0 ; iter < columns ; iter++) {
+          String[] currentRowArray = new String[columns2];
+          for(int iter = 0 ; iter < columns2 ; iter++) {
           currentRowArray[iter] = currentRow.getString(iter);
           }
           dataArray.add(currentRowArray);
@@ -166,5 +168,45 @@ public class PivCalendarDatabase {
           
   }
     
-   
+    
+    public void findEventDate(){
+        ArrayList<String[]> DateData = new ArrayList<String[]>();
+        try{
+            
+        cur = myDataBase.executeQuery("select distinct strftime('%d', Date) from CalendarData order by Date desc");
+        int column = cur.getColumnCount();
+        if(column > 0){
+                boolean next = cur.next();
+                if(next){
+                   
+                    String[] columnNames = new String[column];
+                    for(int iter = 0; iter<column ; iter++ ){
+                        columnNames[iter] = cur.getColumnName(iter);
+                     }
+       while(next) {
+                Row currentRow = cur.getRow();
+                String[] currentRowArray = new String[column];
+                for(int iter = 0 ; iter < column ; iter++) {
+                             currentRowArray[iter] = currentRow.getString(iter);
+                        }
+                DateData.add(currentRowArray);
+                next = cur.next();
+          }
+                arr1 = new Object[DateData.size()][];
+                DateData.toArray(arr1);
+          }
+      }
+}               catch(IOException e){
+                            e.printStackTrace();
+              }
+       Storage dateNumber = Storage.getInstance();
+        Storage s4 = Storage.getInstance();
+                for(int i = 0 ; i< DateData.size(); i++){           
+                     // Log.p(DateData.get(i)[0]);
+                s4.writeObject("Date"+i, DateData.get(i)[0]);
+                 Log.p(s4.readObject("Date"+i).toString());
+                 dateNumber.writeObject("number", i);
+          }
+                      
+    }
 }
