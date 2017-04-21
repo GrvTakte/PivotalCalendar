@@ -9,6 +9,7 @@ import com.codename1.io.Log;
 import com.codename1.io.Storage;
 import com.codename1.io.Util;
 import com.codename1.ui.Command;
+import com.codename1.ui.Dialog;
 import com.codename1.ui.Display;
 import com.codename1.ui.FontImage;
 import com.codename1.ui.Form;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  *
@@ -49,7 +49,7 @@ public class PivCalendarDatabase {
         try{
        String[] DatabaseArgument = new String[]{eventDate,eventName,eventDescription};
         myDataBase.execute("INSERT INTO CalendarData('Date','EventName','EventDescription') VALUES(?,?,?)",  DatabaseArgument );
-        Log.p("Table successfully created");
+        Log.p("Data inserted successfully.");
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -69,10 +69,12 @@ public class PivCalendarDatabase {
                                     Log.e(err);
                             }
           } 
-                    try{
+                    try{                               
                                 myDataBase = Display.getInstance().openOrCreate("Events.db");
                                 
                                 myDataBase.execute("CREATE TABLE IF NOT EXISTS CalendarData (Date date NOT NULL,EventName varchar(255) NOT NULL, EventDescription varchar(255) NOT NULL)");
+                                
+                                
                     }
                             catch(IOException e){
                                         e.printStackTrace();
@@ -203,10 +205,17 @@ public class PivCalendarDatabase {
         Storage s4 = Storage.getInstance();
                 for(int i = 0 ; i< DateData.size(); i++){           
                      // Log.p(DateData.get(i)[0]);
+                     if(DateData!=null){
+                         s4.clearStorage();
+                         dateNumber.clearStorage();
                 s4.writeObject("Date"+i, DateData.get(i)[0]);
                  Log.p(s4.readObject("Date"+i).toString());
                  dateNumber.writeObject("number", i);
-          }
+                     } else{
+                         Dialog.show("EventApp", "Welcome to EventApp application", "OK", "");
+                     }
+                         
+               }
                       
     }
 }

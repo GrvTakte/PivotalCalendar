@@ -1,7 +1,5 @@
 package com.pivotal.event.calendar;
 
-import com.codename1.db.Cursor;
-import com.codename1.db.Database;
 import com.codename1.io.Log;
 import com.codename1.io.Storage;
 import com.codename1.ui.Button;
@@ -18,7 +16,6 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
-import com.codename1.ui.spinner.Picker;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -27,10 +24,6 @@ import java.util.Date;
  * @author gaurav
  */
 public class PivDisplayCalendar extends Form {
-    Cursor cur;
-    Database myDataBase;
-    PivEventCalendar EventObject = new PivEventCalendar();
-    
     
     int length2 =1;
     int length = 31;
@@ -43,15 +36,11 @@ public class PivDisplayCalendar extends Form {
      public int i = 1, j=0, k=0;
      public Date value = new Date();
      public Object metaData;
-     Button dayButton= new Button();
+     public Button dayButton= new Button();
      private ArrayList<Button> allButtons = new ArrayList<Button>();
-     Object[][] DateObject;
-     int columns;
-     Storage dateNumber = Storage.getInstance();
+     public Storage dateNumber = Storage.getInstance();
      public Storage s4 = Storage.getInstance();
-     public String parseNumber=dateNumber.readObject("number").toString();
-                    
-     public int number=Integer.parseInt(parseNumber);
+    
 
    
     public PivDisplayCalendar(){
@@ -84,17 +73,21 @@ public class PivDisplayCalendar extends Form {
                 title.setUIID("CalendarTitleArea");
                 days.setUIID("CalendarDayArea");
             }
+           
             for (int iter = 0; iter < DAYS.length; iter++) {
                 title.addComponent(createDayTitle(iter));
             }
+            
             for (int iter = 0; iter < length; iter++) {
                 
                 if(iter<monthStart[j]){
                     dayButton=new Button("");
+                    j++;
                 }
                 else{
+                    try{
                     if(dateNumber.readObject("number").toString()!=null){
-                             
+                        int number=Integer.parseInt(dateNumber.readObject("number").toString());
                     if(length2!=Integer.parseInt(s4.readObject("Date"+number).toString())){
                         dayButton = new Button(""+ length2);
                         length2++;
@@ -112,6 +105,9 @@ public class PivDisplayCalendar extends Form {
                             dayButton = new Button(""+length2);
                             length2++;
                     }
+                }catch(NullPointerException e){
+                    e.printStackTrace();
+                }
                 }
                 
               /* Log.p("Getting data from Model class");
@@ -120,7 +116,7 @@ public class PivDisplayCalendar extends Form {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
                             Log.p("Action event triggered");
-                            Picker datePicker = new Picker();
+                            
                            
                             try{
                                 Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);
@@ -176,7 +172,7 @@ public class PivDisplayCalendar extends Form {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
                             Log.p("Action event triggered");
-                            Picker datePicker = new Picker();
+                            
                            
                             try{
                                 Display.getInstance().showNativePicker(Display.PICKER_TYPE_DATE,PivDisplayCalendar.this, value, metaData);

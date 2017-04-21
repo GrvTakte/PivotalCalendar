@@ -78,7 +78,7 @@ public class PivEventCalendar {
             
             tb.setTitle("EventApp");
             tb.addCommandToOverflowMenu("Event Database", FontImage.createMaterial(FontImage.MATERIAL_DATA_USAGE, UIManager.getInstance().getComponentStyle("Title")), (evt) -> {
-            DatabaseObj.displayEvent();
+                            DatabaseObj.displayEvent();
             });
             tb.addCommandToOverflowMenu("Event Map", FontImage.createMaterial(FontImage.MATERIAL_MAP, UIManager.getInstance().getComponentStyle("Title")), (evt) -> {
             });
@@ -111,8 +111,14 @@ public class PivEventCalendar {
             clear.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent evt) {
-                                String demo1 = DatabaseObj.ModelObject.getEventName();
-                                Log.p(demo1);
+                                if((DateLabel!=null) || (EventText!=null) || (DescriptionText!= null)){
+                                    if((DateLabel.getText()=="")||(EventText.getText()=="")||(DescriptionText.getText()=="")){
+                                    DateLabel.clear();
+                                    EventText.clear();
+                                    DescriptionText.clear();
+                                    }
+                                }
+                                    
                     }
             });
         
